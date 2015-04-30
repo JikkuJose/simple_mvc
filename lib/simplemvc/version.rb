@@ -1,3 +1,3 @@
-module Simplemvc
+module SimpleMVC
   VERSION = "0.0.1"
 end

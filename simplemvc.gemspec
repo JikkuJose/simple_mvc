@@ -4,8 +4,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'simplemvc/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "simplemvc"
-  spec.version       = Simplemvc::VERSION
+  spec.name          = "simple_mvc"
+  spec.version       = SimpleMVC::VERSION
   spec.authors       = ["Jikku Jose"]
   spec.email         = ["jikkujose@gmail.com"]
   spec.summary       = %q{A simple gem to learn about MVC}
