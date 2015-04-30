@@ -1,4 +1,4 @@
-require "simplemvc/version"
+require "simple_mvc/version"
 
 module SimpleMVC
   class Application
