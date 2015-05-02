@@ -1,10 +1,11 @@
 require "simple_mvc/version"
+require "simple_mvc/controller"
 
 module SimpleMVC
   class Application
     def call(env)
       @env = env
-      [200, {"Content-Type" => "text/html"}, response]
+      [200, {"Content-Type" => "text/html"}, [response]]
     end
 
     def response
@@ -17,12 +18,19 @@ module SimpleMVC
 
     def controller
       controller_name = path_info.first
-      controller = (controller_name.capitalize + "Controller").to_sym
-      Object.const_get controller
+      controller_symbol = (encapsulating_module +
+                           "::" +
+                           controller_name.capitalize +
+                           "Controller")
+      Object.const_get controller_symbol
     end
 
     def action
       path_info.last.to_sym
+    end
+
+    def encapsulating_module
+      self.class.ancestors.first.to_s.split("::").first
     end
   end
 end
