@@ -1,6 +1,4 @@
 require "simple_mvc/version"
-require "simple_mvc/utils"
-require "simple_mvc/dependencies"
 require "simple_mvc/controller"
 
 module SimpleMVC
@@ -11,26 +9,35 @@ module SimpleMVC
     end
 
     def response
-      controller.new.send action
+      c = controller.new
+      c.send action
+      c.render "#{action}.haml"
     end
+
+    def action
+      path_info.last.to_sym
+    end
+
+    def controller
+      require "#{controller_name}_controller"
+      Object.const_get controller_symbol
+    end
+
+    private
 
     def path_info
       @env["PATH_INFO"].split("/").reject { |element| element.empty? }
     end
 
-    def controller
-      controller_name = path_info.first
-      controller_symbol = (encapsulating_module +
-                           "::" +
-                           controller_name.capitalize +
-                           "Controller")
-
-      require "#{controller_name}_controller"
-      Object.const_get controller_symbol
+    def controller_name
+      path_info.first
     end
 
-    def action
-      path_info.last.to_sym
+    def controller_symbol
+      encapsulating_module +
+        "::" +
+        controller_name.capitalize +
+        "Controller"
     end
 
     def encapsulating_module
