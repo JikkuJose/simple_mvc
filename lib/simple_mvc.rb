@@ -1,4 +1,6 @@
 require "simple_mvc/version"
+require "simple_mvc/utils"
+require "simple_mvc/dependencies"
 require "simple_mvc/controller"
 
 module SimpleMVC
@@ -22,6 +24,8 @@ module SimpleMVC
                            "::" +
                            controller_name.capitalize +
                            "Controller")
+
+      require "#{controller_name}_controller"
       Object.const_get controller_symbol
     end
 
