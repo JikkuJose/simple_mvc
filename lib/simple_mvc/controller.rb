@@ -11,6 +11,7 @@ module SimpleMVC
     def locals
       instance_variables.each_with_object({}) do |v, hash|
         variable = v.to_s[1..-1].to_sym
+        p variable
         hash[variable] = instance_variable_get v
       end
     end

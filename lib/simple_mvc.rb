@@ -3,19 +3,29 @@ require "simple_mvc/controller"
 
 module SimpleMVC
   class Application
+    attr_reader :request
+
     def call(env)
       @env = env
-      [200, {"Content-Type" => "text/html"}, [response]]
+      @request = Rack::Request.new env
+
+      response
     end
 
     def response
       c = controller.new
       c.send action
-      c.render "#{action}.haml"
+      body = c.render("#{action}.haml")
+
+      Rack::Response.new(body, 200, {"Content-Type" => "text/html"})
     end
 
     def action
       path_info.last.to_sym
+    end
+
+    def params
+      @params = @request.params
     end
 
     def controller
