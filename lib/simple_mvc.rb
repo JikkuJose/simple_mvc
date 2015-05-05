@@ -1,52 +1,34 @@
 require "simple_mvc/version"
 require "simple_mvc/controller"
+require "simple_mvc/controller_factory"
+require "ostruct"
 
 module SimpleMVC
+  @config = OpenStruct.new({language: :english})
+
   class Application
-    attr_reader :request
+    attr_reader :config
+
+    def initialize(config = {})
+      @config = merge_configuration config
+    end
 
     def call(env)
       @env = env
 
-      response
+      ControllerFactory.create(env).new(env).response
     end
 
-    def response
-      c = controller.new Rack::Request.new(@env)
-      c.send action
-      body = c.render("#{action}.haml")
-
-      Rack::Response.new(body, 200, {"Content-Type" => "text/html"})
+    def merge_configuration(config)
+      OpenStruct.new SimpleMVC.config.marshal_dump.merge(config)
     end
+  end
 
-    def action
-      path_info.last.to_sym
-    end
+  def self.configure(&block)
+    block.call(@config)
+  end
 
-    def controller
-      require "#{controller_name}_controller"
-      Object.const_get controller_symbol
-    end
-
-    private
-
-    def path_info
-      @env["PATH_INFO"].split("/").reject { |element| element.empty? }
-    end
-
-    def controller_name
-      path_info.first
-    end
-
-    def controller_symbol
-      encapsulating_module +
-        "::" +
-        controller_name.capitalize +
-        "Controller"
-    end
-
-    def encapsulating_module
-      self.class.ancestors.first.to_s.split("::").first
-    end
+  def self.config
+    @config
   end
 end
