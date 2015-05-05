@@ -7,13 +7,12 @@ module SimpleMVC
 
     def call(env)
       @env = env
-      @request = Rack::Request.new env
 
       response
     end
 
     def response
-      c = controller.new
+      c = controller.new Rack::Request.new(@env)
       c.send action
       body = c.render("#{action}.haml")
 
@@ -22,10 +21,6 @@ module SimpleMVC
 
     def action
       path_info.last.to_sym
-    end
-
-    def params
-      @params = @request.params
     end
 
     def controller
